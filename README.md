@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:6366f1,50:8b5cf6,100:a855f7&height=220&section=header&text=README%20AI%20Enhancer&fontSize=46&fontColor=ffffff&animation=fadeIn&fontAlignY=36&desc=Transform%20any%20README%20with%20the%20power%20of%20Google%20Gemini%20AI&descAlignY=56&descSize=17" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:6366f1,50:8b5cf6,100:a855f7&height=260&section=header&text=README%20AI%20Enhancer&fontSize=44&fontColor=ffffff&animation=fadeIn&fontAlignY=34&desc=Transform%20any%20README%20with%20the%20power%20of%20Google%20Gemini%20AI&descAlignY=58&descSize=17" width="100%"/>
 
 <br/>
 
@@ -30,6 +30,12 @@
 
 <br/>
 
+<div align="center">
+<img src="https://media.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif" width="360" alt="AI writing animation"/>
+</div>
+
+<br/>
+
 ## 📋 Table of Contents
 
 | # | Section |
@@ -51,17 +57,11 @@
 
 ## 📖 About
 
-**README AI Enhancer** is a web application that takes any tired, incomplete, or messy `README.md` and turns it into something that actually makes people want to use your project.
+**README AI Enhancer** is a web application that takes any tired, incomplete, or messy `README.md` and turns it into something that actually makes people want to use your project. 🪄
 
 Upload a `.md` file or paste raw Markdown text. The app sends your content to **Google Gemini 1.5 Flash** which scans for gaps like missing setup instructions, unclear feature descriptions, absent badges, or weak structure. Gemini then generates a fully rewritten, professional version that you can review and download in one click.
 
-Every analysis is stored in **Supabase** so results are always retrievable. The entire stack runs serverlessly on **Next.js** deployed on **Vercel**.
-
-<div align="center">
-
-<img src="https://media.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif" width="360" alt="AI writing animation"/>
-
-</div>
+Every analysis is stored in **Supabase** so results are always retrievable. The entire stack runs serverlessly on **Next.js** deployed on **Vercel**. 🚀
 
 <br/>
 
@@ -78,7 +78,7 @@ Every analysis is stored in **Supabase** so results are always retrievable. The 
 | **Drag and Drop Upload** | 🖱️ | Drop your file anywhere on the upload zone |
 | **Secure Storage** | 🔒 | Every analysis is saved to Supabase for later retrieval |
 | **Serverless Backend** | ⚡ | Runs on Next.js API routes, zero server management |
-| **Vercel Ready** | ▲ | Zero-config deployment to Vercel with environment variables |
+| **Vercel Ready** | ▲ | Zero config deployment to Vercel with environment variables |
 
 </div>
 
@@ -97,8 +97,8 @@ Every analysis is stored in **Supabase** so results are always retrievable. The 
 
 | Layer | Technology | Purpose |
 |:------|:-----------|:--------|
-| 🎨 **Frontend** | Next.js 14 + TypeScript | UI and routing |
-| 💅 **Styling** | Tailwind CSS + Custom CSS | Dark glassmorphism design |
+| 🎨 **Frontend** | Next.js 14 with TypeScript | UI and routing |
+| 💅 **Styling** | Tailwind CSS with Custom CSS | Dark glassmorphism design |
 | ⚙️ **Backend** | Next.js API Routes | Serverless endpoints |
 | 🗄️ **Database** | Supabase (PostgreSQL) | Analysis result storage |
 | 🧠 **AI Model** | Google Gemini 1.5 Flash | Limitations detection and rewriting |
@@ -179,7 +179,7 @@ Create a `.env.local` file in the project root:
 cp .env.example .env.local
 ```
 
-Then fill in your values (see [Environment Variables](#-environment-variables) below).
+Then fill in your values, see [Environment Variables](#-environment-variables) below.
 
 </details>
 
@@ -219,7 +219,7 @@ flowchart LR
 | 1 | 📤 **Provide your README** | Upload a `.md` file or paste raw Markdown text into the editor |
 | 2 | 🧠 **AI analyzes it** | Gemini scans for structural gaps, missing sections, and unclear writing |
 | 3 | ⚠️ **Review the findings** | See a numbered list of what is weak or missing in your current README |
-| 4 | ✨ **Get the enhanced version** | The app produces a polished, well structured, emoji-rich rewrite |
+| 4 | ✨ **Get the enhanced version** | The app produces a polished, well structured, emoji rich rewrite |
 | 5 | 📥 **Download and use it** | Save the new `README.md` and drop it directly into your repository |
 
 <br/>
@@ -286,10 +286,10 @@ create policy "Allow update" on readme_analyses
 
 | Column | Type | Description |
 |:-------|:-----|:------------|
-| `id` | uuid | Primary key, auto-generated |
+| `id` | uuid | Primary key, auto generated |
 | `original_text` | text | The README content submitted by the user |
 | `limitations` | text | Numbered list of issues found by Gemini |
-| `improved_text` | text | The AI-generated enhanced README |
+| `improved_text` | text | The AI generated enhanced README |
 | `status` | text | Either `processing` or `completed` |
 | `created_at` | timestamptz | Record creation timestamp |
 
@@ -308,7 +308,7 @@ README AI Enhancer is built to deploy on **Vercel** with zero configuration.
 1. 📤 Push your fork to GitHub
 2. 📥 Import the repository at [vercel.com/new](https://vercel.com/new)
 3. 🔑 Add all three environment variables in the Vercel project settings
-4. ⚙️ Vercel auto-detects Next.js and configures the build
+4. ⚙️ Vercel auto detects Next.js and configures the build
 5. 🚀 Click **Deploy**
 
 </details>
@@ -318,13 +318,13 @@ README AI Enhancer is built to deploy on **Vercel** with zero configuration.
 npx vercel --prod
 ```
 
-> 💡 **Tip:** The Gemini 1.5 Flash model is fast enough to complete within Vercel Hobby Plan's 10-second function timeout when input is kept under 8,000 characters.
+> 💡 **Tip:** The Gemini 1.5 Flash model is fast enough to complete within the Vercel Hobby Plan's 10 second function timeout when input is kept under 8,000 characters.
 
 <br/>
 
 ## 🤝 Contributing
 
-Contributions, bug reports, and feature requests are welcome!
+Contributions, bug reports, and feature requests are welcome! 🙌
 
 1. 🍴 Fork the repository
 2. 🌿 Create a feature branch: `git checkout -b feature/your-feature`
@@ -347,7 +347,7 @@ This project is licensed under the **MIT License**. See the [LICENSE](./LICENSE)
 - 🧠 **Google Gemini** for powering the AI analysis and generation
 - 🗄️ **Supabase** for a fast and reliable serverless database
 - ▲ **Vercel** for effortless deployment and hosting
-- ⚡ **Next.js** for the fantastic full-stack React framework
+- ⚡ **Next.js** for the fantastic full stack React framework
 - 💛 Everyone who has ever suffered through writing a README by hand
 
 <br/>
@@ -364,6 +364,6 @@ This project is licensed under the **MIT License**. See the [LICENSE](./LICENSE)
 
 Made with 💜 by [Abdul Azeem Hashmi](https://github.com/AbdulAzeemHashmi)
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:a855f7,100:6366f1&height=100&section=footer" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:a855f7,100:6366f1&height=120&section=footer" width="100%"/>
 
 </div>
