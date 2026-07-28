@@ -1,46 +1,57 @@
-import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
-import { PromptTemplate } from '@langchain/core/prompts';
-import { RunnableSequence } from '@langchain/core/runnables';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const llm = new ChatGoogleGenerativeAI({
-    model: 'gemini-1.5-pro',
-    apiKey: process.env.GEMINI_API_KEY,
-    temperature: 0.7,
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-// Prompt for limitations
-const limitationsPrompt = PromptTemplate.fromTemplate(`
-You are an expert technical writer. Analyze the following README content and list its limitations, gaps, and areas for improvement. Be specific and constructive.
+const STYLE_RULES = `
+STRICT FORMATTING RULES (you must follow all of them):
+- Do NOT use em dashes (the character that looks like ---)
+- Do NOT use en dashes (the character that looks like --)
+- Use a hyphen (-) or colon (:) wherever you would normally use a dash
+- Use emojis generously to make sections visually engaging
+- Use proper Markdown headings, bullet points, code blocks, and tables
+- Write in clear, direct, professional English
+`;
 
-Content:
-{text}
+export async function analyzeReadme(text: string): Promise<{
+    limitations: string;
+    improvedText: string;
+}> {
+    // Step 1: Find limitations
+    const limitationsResult = await model.generateContent(
+        `You are an expert technical writer reviewing a README file.
+Analyze the README content below and produce a numbered list of its specific limitations, gaps, and weak points.
+Be concrete and actionable. Group similar issues together.
 
-Limitations:
-`);
+${STYLE_RULES}
 
-// Prompt for improved version
-const improvedPrompt = PromptTemplate.fromTemplate(`
-Based on the original README and the identified limitations below, rewrite the entire README to be more professional, clear, and complete. Fix any issues mentioned.
+README Content:
+${text}
 
-Original:
-{text}
+Limitations (numbered list):`
+    );
+    const limitations = limitationsResult.response.text();
 
-Limitations:
-{limitations}
+    // Step 2: Rewrite the README
+    const improvedResult = await model.generateContent(
+        `You are an expert technical writer.
+Rewrite the README below into a polished, professional, and complete document.
+Address every limitation listed. The output must be valid Markdown only, with no explanation or commentary before or after.
 
-Improved README:
-`);
+${STYLE_RULES}
+- Use animated badges from shields.io where appropriate
+- Include emojis in section headings
+- Structure with: Overview, Features, Tech Stack, Getting Started, Usage, Environment Variables, Contributing, License
 
-export async function analyzeReadme(text: string) {
-    // Step 1: Get limitations
-    const limitationsChain = limitationsPrompt.pipe(llm);
-    const limitationsResult = await limitationsChain.invoke({ text });
-    const limitations = limitationsResult.content as string;
+Original README:
+${text}
 
-    // Step 2: Generate improved version
-    const improvedChain = improvedPrompt.pipe(llm);
-    const improvedResult = await improvedChain.invoke({ text, limitations });
-    const improvedText = improvedResult.content as string;
+Identified Limitations to Fix:
+${limitations}
+
+Complete Improved README (Markdown only, starts with #):`
+    );
+    const improvedText = improvedResult.response.text();
 
     return { limitations, improvedText };
 }
