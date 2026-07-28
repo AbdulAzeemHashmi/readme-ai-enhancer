@@ -74,16 +74,12 @@ export default function Result() {
                 <div className="space-y-6">
                     <div className="bg-white p-6 rounded-lg shadow">
                         <h2 className="text-xl font-semibold mb-2">🔍 Identified Limitations</h2>
-                        <div className="prose prose-sm max-w-none">
-                            <pre className="whitespace-pre-wrap bg-gray-100 p-4 rounded">{data.limitations}</pre>
-                        </div>
+                        <pre className="whitespace-pre-wrap bg-gray-100 p-4 rounded">{data.limitations}</pre>
                     </div>
 
                     <div className="bg-white p-6 rounded-lg shadow">
                         <h2 className="text-xl font-semibold mb-2">✨ Improved README</h2>
-                        <div className="prose prose-sm max-w-none">
-                            <pre className="whitespace-pre-wrap bg-gray-100 p-4 rounded">{data.improved_text}</pre>
-                        </div>
+                        <pre className="whitespace-pre-wrap bg-gray-100 p-4 rounded">{data.improved_text}</pre>
                         <button
                             onClick={downloadImproved}
                             className="mt-4 bg-green-600 text-white py-2 px-6 rounded-md hover:bg-green-700 transition"
