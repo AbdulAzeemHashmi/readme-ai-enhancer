@@ -22,16 +22,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             });
         }
 
+        // Insert into Supabase
         const { data: record, error: insertError } = await supabase
             .from('readme_analyses')
             .insert({ original_text: text, status: 'processing' })
             .select('id')
             .single();
 
-        if (insertError) throw insertError;
+        if (insertError) {
+            console.error('Supabase insert error:', insertError);
+            throw new Error(`Database insert failed: ${insertError.message}`);
+        }
 
+        // Call Gemini
         const { limitations, improvedText } = await analyzeReadme(text);
 
+        // Update record
         const { error: updateError } = await supabase
             .from('readme_analyses')
             .update({
@@ -41,12 +47,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             })
             .eq('id', record.id);
 
-        if (updateError) throw updateError;
+        if (updateError) {
+            console.error('Supabase update error:', updateError);
+            throw new Error(`Database update failed: ${updateError.message}`);
+        }
 
         return res.status(200).json({ id: record.id });
-    } catch (error: unknown) {
-        console.error('analyze error:', error);
-        const message = error instanceof Error ? error.message : 'Internal server error';
+    } catch (error: any) {
+        // Log full error details for debugging
+        console.error('❌ API /analyze error:', error);
+
+        // Return a clear message to the client
+        const message = error.message || 'Internal server error';
         return res.status(500).json({ error: message });
     }
 }
