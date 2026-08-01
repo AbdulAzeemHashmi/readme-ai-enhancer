@@ -1,22 +1,23 @@
 import { GoogleGenerativeAI, GenerativeModel } from '@google/generative-ai';
 
-// Validate API key exists
 const apiKey = process.env.GEMINI_API_KEY;
 if (!apiKey) {
-    throw new Error('GEMINI_API_KEY is not set in environment variables');
+    throw new Error('GEMINI_API_KEY is not set');
 }
 
+// Initialize with the new key
 const genAI = new GoogleGenerativeAI(apiKey);
 
-// Use the most widely compatible model
-const MODEL_NAME = 'gemini-pro';
+// Use the model that is available for new keys
+const MODEL_NAME = 'gemini-1.5-flash';
 let model: GenerativeModel;
 
 try {
     model = genAI.getGenerativeModel({ model: MODEL_NAME });
+    console.log(`✅ Gemini model "${MODEL_NAME}" initialized.`);
 } catch (err) {
-    console.error(`Failed to initialize model "${MODEL_NAME}":`, err);
-    throw new Error(`Gemini model initialization failed: ${err instanceof Error ? err.message : String(err)}`);
+    console.error('❌ Failed to initialize model:', err);
+    throw new Error(`Model init failed: ${err instanceof Error ? err.message : String(err)}`);
 }
 
 const STYLE_RULES = `
@@ -34,7 +35,6 @@ export async function analyzeReadme(text: string): Promise<{
     improvedText: string;
 }> {
     try {
-        // Step 1: Find limitations
         const limitationsResult = await model.generateContent(
             `You are an expert technical writer reviewing a README file.
 Analyze the README content below and produce a numbered list of its specific limitations, gaps, and weak points.
@@ -49,7 +49,6 @@ Limitations (numbered list):`
         );
         const limitations = limitationsResult.response.text();
 
-        // Step 2: Rewrite the README
         const improvedResult = await model.generateContent(
             `You are an expert technical writer.
 Rewrite the README below into a polished, professional, and complete document.
@@ -72,7 +71,7 @@ Complete Improved README (Markdown only, starts with #):`
 
         return { limitations, improvedText };
     } catch (error: any) {
-        // Rethrow with more context
+        console.error('❌ Gemini API error:', error);
         throw new Error(`Gemini API error: ${error.message || error}`);
     }
 }
