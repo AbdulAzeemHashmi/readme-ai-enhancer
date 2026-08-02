@@ -55,10 +55,11 @@ export default function Result() {
     useEffect(() => {
         if (!id) return;
         const fetchResult = async () => {
+            const API_BASE = process.env.NEXT_PUBLIC_PYTHON_API_URL || 'http://localhost:8000';
             try {
-                const res = await fetch(`/api/result/${id}`);
+                const res = await fetch(`${API_BASE}/result/${id}`);
                 const json = await res.json();
-                if (!res.ok) throw new Error(json.error || 'Failed to load');
+                if (!res.ok) throw new Error(json.detail || json.error || 'Failed to load');
                 setData(json);
             } catch (err: unknown) {
                 setError(err instanceof Error ? err.message : 'Failed to load result');
@@ -88,13 +89,11 @@ export default function Result() {
                 <title>Analysis Result — README AI Enhancer</title>
             </Head>
 
-            {/* Background orbs */}
             <div className="orb orb-1" />
             <div className="orb orb-2" />
 
             <div style={{ position: 'relative', zIndex: 1, minHeight: '100vh', padding: '0 16px 60px' }}>
 
-                {/* ── Header ── */}
                 <div style={{ maxWidth: 960, margin: '0 auto', padding: '20px 0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                         <button
@@ -128,7 +127,6 @@ export default function Result() {
                     )}
                 </div>
 
-                {/* ── Title ── */}
                 <div style={{ maxWidth: 960, margin: '0 auto 24px', textAlign: 'center' }} className="animate-fade-up">
                     {loading ? (
                         <>
@@ -157,7 +155,6 @@ export default function Result() {
                     )}
                 </div>
 
-                {/* ── Tab bar (mobile) ── */}
                 {!loading && !error && data && (
                     <div style={{ maxWidth: 960, margin: '0 auto 16px', display: 'flex', gap: 8, borderBottom: '1px solid var(--border)', paddingBottom: 0 }}>
                         {(['limitations', 'improved'] as const).map((tab) => (
@@ -184,10 +181,8 @@ export default function Result() {
                     </div>
                 )}
 
-                {/* ── Content Grid ── */}
                 <div style={{ maxWidth: 960, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: 16 }}>
 
-                    {/* ── Limitations Panel ── */}
                     <div
                         className="glass-card animate-fade-up"
                         style={{ padding: '24px', display: activeTab !== 'limitations' ? 'none' : undefined }}
@@ -230,7 +225,6 @@ export default function Result() {
                         )}
                     </div>
 
-                    {/* ── Improved README Panel ── */}
                     <div
                         className="glass-card animate-fade-up-delay-1"
                         style={{ padding: '24px', display: activeTab !== 'improved' ? 'none' : undefined }}
@@ -285,7 +279,6 @@ export default function Result() {
 
                 </div>
 
-                {/* ── Desktop: always show both ── */}
                 <style>{`
                     @media (min-width: 768px) {
                         #limitations-panel,
@@ -298,7 +291,6 @@ export default function Result() {
                     }
                 `}</style>
 
-                {/* ── CTA ── */}
                 {!loading && !error && (
                     <div style={{ maxWidth: 960, margin: '24px auto 0', textAlign: 'center' }}>
                         <button

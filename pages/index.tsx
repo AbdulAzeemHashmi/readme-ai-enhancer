@@ -20,7 +20,6 @@ export default function Home() {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
 
-    // Read file as text client-side and store in the same text state
     const loadFile = useCallback((f: File) => {
         if (!f.name.endsWith('.md') && !f.name.endsWith('.txt')) {
             setError('Only .md and .txt files are supported.');
@@ -80,8 +79,10 @@ export default function Home() {
         setLoading(true);
         setError('');
 
+        const API_BASE = process.env.NEXT_PUBLIC_PYTHON_API_URL || 'http://localhost:8000';
+
         try {
-            const res = await fetch('/api/analyze', {
+            const res = await fetch(`${API_BASE}/analyze`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text }),
@@ -90,7 +91,7 @@ export default function Home() {
             if (res.ok) {
                 router.push(`/result/${data.id}`);
             } else {
-                setError(data.error || 'Something went wrong. Please try again.');
+                setError(data.detail || data.error || 'Something went wrong. Please try again.');
             }
         } catch {
             setError('Network error. Please check your connection and try again.');
@@ -114,7 +115,6 @@ export default function Home() {
 
             <div style={{ position: 'relative', zIndex: 1, minHeight: '100vh', padding: '0 16px 60px' }}>
 
-                {/* Nav */}
                 <nav style={{ maxWidth: 760, margin: '0 auto', padding: '20px 0 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         <span style={{ fontSize: '1.4rem' }}>✨</span>
@@ -126,7 +126,6 @@ export default function Home() {
                     </div>
                 </nav>
 
-                {/* Hero */}
                 <div style={{ maxWidth: 760, margin: '0 auto', paddingTop: 48, textAlign: 'center' }} className="animate-fade-up">
                     <div className="badge badge-purple" style={{ marginBottom: 20, display: 'inline-flex' }}>
                         🚀 AI-Powered · Free · Instant
@@ -139,7 +138,6 @@ export default function Home() {
                         Upload your README, let AI pinpoint every weakness, then get a fully rewritten professional version in seconds.
                     </p>
 
-                    {/* Step pills */}
                     <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 8, marginBottom: 48 }} className="animate-fade-up-delay-1">
                         {STEPS.map((step, i) => (
                             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: i < STEPS.length - 1 ? 8 : 0 }}>
@@ -155,12 +153,10 @@ export default function Home() {
                     </div>
                 </div>
 
-                {/* Main Card */}
                 <div style={{ maxWidth: 760, margin: '0 auto' }} className="animate-fade-up-delay-2">
                     <div className="glass-card" style={{ padding: '32px' }}>
                         <form onSubmit={handleSubmit}>
 
-                            {/* Textarea */}
                             <div style={{ marginBottom: 24 }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                                     <label htmlFor="readme-text-input" style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
@@ -189,14 +185,12 @@ export default function Home() {
                                 )}
                             </div>
 
-                            {/* Divider */}
                             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
                                 <div className="divider-gradient" style={{ flex: 1 }} />
                                 <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>or upload a file</span>
                                 <div className="divider-gradient" style={{ flex: 1 }} />
                             </div>
 
-                            {/* Drop zone */}
                             <div style={{ marginBottom: 24 }}>
                                 <div
                                     id="file-drop-zone"
@@ -246,7 +240,6 @@ export default function Home() {
                                 />
                             </div>
 
-                            {/* Error */}
                             {error && (
                                 <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 10, padding: '10px 14px', marginBottom: 20, fontSize: '0.83rem', color: '#fca5a5', display: 'flex', gap: 8, alignItems: 'flex-start' }}>
                                     <span>⚠️</span>
@@ -254,7 +247,6 @@ export default function Home() {
                                 </div>
                             )}
 
-                            {/* Submit */}
                             <button
                                 type="submit"
                                 id="enhance-btn"
@@ -286,7 +278,6 @@ export default function Home() {
                         </form>
                     </div>
 
-                    {/* Feature cards */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 16 }} className="animate-fade-up-delay-3">
                         {[
                             { icon: '🔍', title: 'Deep Analysis', desc: 'AI pinpoints every gap, ambiguity, and missing section.' },
