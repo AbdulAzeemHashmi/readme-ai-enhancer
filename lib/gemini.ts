@@ -2,22 +2,42 @@ import { GoogleGenerativeAI, GenerativeModel } from '@google/generative-ai';
 
 const apiKey = process.env.GEMINI_API_KEY;
 if (!apiKey) {
-    throw new Error('GEMINI_API_KEY is not set');
+    throw new Error('GEMINI_API_KEY is not set in environment variables');
 }
 
-// Initialize with the new key
-const genAI = new GoogleGenerativeAI(apiKey);
+// Try multiple models (in order of compatibility)
+const MODEL_NAMES = [
+    'gemini-2.0-flash-exp',
+    'gemini-1.5-flash',
+    'gemini-1.5-pro',
+    'gemini-pro',
+];
 
-// Use the model that is available for new keys
-const MODEL_NAME = 'gemini-2.5-flash';
-let model: GenerativeModel;
+let model: GenerativeModel | null = null;
+let lastError: Error | null = null;
 
-try {
-    model = genAI.getGenerativeModel({ model: MODEL_NAME });
-    console.log(`✅ Gemini model "${MODEL_NAME}" initialized.`);
-} catch (err) {
-    console.error('❌ Failed to initialize model:', err);
-    throw new Error(`Model init failed: ${err instanceof Error ? err.message : String(err)}`);
+// Try each model until one works
+for (const name of MODEL_NAMES) {
+    try {
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const testModel = genAI.getGenerativeModel({ model: name });
+        // Quick test to verify the model works
+        await testModel.generateContent('test');
+        model = testModel;
+        console.log(`✅ Gemini model "${name}" initialized successfully.`);
+        break;
+    } catch (err: any) {
+        console.warn(`❌ Model "${name}" failed:`, err.message || err);
+        lastError = err;
+    }
+}
+
+// If no model worked, throw an error
+if (!model) {
+    throw new Error(
+        `No Gemini model available. Last error: ${lastError?.message || 'Unknown error'}\n` +
+        'Make sure your API key is valid and the Gemini API is enabled.'
+    );
 }
 
 const STYLE_RULES = `
@@ -34,6 +54,12 @@ export async function analyzeReadme(text: string): Promise<{
     limitations: string;
     improvedText: string;
 }> {
+    // TypeScript now knows `model` is not null because we checked above,
+    // but we add an extra guard for safety.
+    if (!model) {
+        throw new Error('Gemini model is not initialized');
+    }
+
     try {
         const limitationsResult = await model.generateContent(
             `You are an expert technical writer reviewing a README file.
