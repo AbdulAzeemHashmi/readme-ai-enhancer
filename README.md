@@ -51,15 +51,14 @@
 | 02 | [🎯 Key Features](#-key-features) |
 | 03 | [🛠️ Tech Stack](#️-tech-stack) |
 | 04 | [📂 Project Structure](#-project-structure) |
-| 05 | [🖼️ Screenshots](#️-screenshots) |
-| 06 | [🚀 Getting Started](#-getting-started) |
-| 07 | [📘 How It Works](#-how-it-works) |
-| 08 | [🔑 Environment Variables](#-environment-variables) |
-| 09 | [🗄️ Database Setup](#️-database-setup) |
-| 10 | [☁️ Deployment](#️-deployment) |
-| 11 | [🤝 Contributing](#-contributing) |
-| 12 | [📄 License](#-license) |
-| 13 | [🙏 Acknowledgments](#-acknowledgments) |
+| 05 | [🚀 Getting Started](#-getting-started) |
+| 06 | [📘 How It Works](#-how-it-works) |
+| 07 | [🔑 Environment Variables](#-environment-variables) |
+| 08 | [🗄️ Database Setup](#️-database-setup) |
+| 09 | [☁️ Deployment](#️-deployment) |
+| 10 | [🤝 Contributing](#-contributing) |
+| 11 | [📄 License](#-license) |
+| 12 | [🙏 Acknowledgments](#-acknowledgments) |
 
 ---
 
@@ -167,20 +166,6 @@ readme-ai-enhancer/
 ├── 📘 tsconfig.json
 └── 🔺 vercel.json                # Vercel routing and function configuration
 ```
-
----
-
-## 🖼️ Screenshots
-
-<div align="center">
-
-| Upload Screen | Result Page |
-|:---:|:---:|
-| ![Upload Screen](https://via.placeholder.com/400x280/07080f/6366f1?text=Upload+Screen) | ![Result Page](https://via.placeholder.com/400x280/07080f/a855f7?text=Result+Page) |
-
-> 📸 Replace these placeholders with real screenshots once you have them.
-
-</div>
 
 ---
 
