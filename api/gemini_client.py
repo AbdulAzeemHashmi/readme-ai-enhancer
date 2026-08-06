@@ -2,6 +2,7 @@ import os
 import google.generativeai as genai
 from dotenv import load_dotenv
 
+# Load .env from the root (Vercel sets env vars, but local needs this)
 load_dotenv()
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
@@ -10,8 +11,7 @@ if not GEMINI_API_KEY:
 
 genai.configure(api_key=GEMINI_API_KEY)
 
-# Use a model that works with the AQ key
-MODEL_NAME = "gemini-1.5-flash"   # or "gemini-2.0-flash-exp" if available
+MODEL_NAME = "gemini-1.5-flash"
 model = genai.GenerativeModel(MODEL_NAME)
 
 STYLE_RULES = """
@@ -24,7 +24,6 @@ STRICT FORMATTING RULES (you must follow all of them):
 """
 
 def analyze_readme(text: str):
-    # 1. Find limitations
     limitations_prompt = f"""
 You are an expert technical writer reviewing a README file.
 Analyze the README content below and produce a numbered list of its specific limitations, gaps, and weak points.
@@ -40,7 +39,6 @@ Limitations (numbered list):
     limitations_res = model.generate_content(limitations_prompt)
     limitations = limitations_res.text
 
-    # 2. Rewrite the README
     improved_prompt = f"""
 You are an expert technical writer.
 Rewrite the README below into a polished, professional, and complete document.
