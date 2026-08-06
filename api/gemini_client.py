@@ -2,7 +2,6 @@ import os
 import google.generativeai as genai
 from dotenv import load_dotenv
 
-# Load .env from the root (Vercel sets env vars, but local needs this)
 load_dotenv()
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
@@ -11,7 +10,7 @@ if not GEMINI_API_KEY:
 
 genai.configure(api_key=GEMINI_API_KEY)
 
-# Models to try in order (most recent / most likely to work with AQ keys first)
+# Models to try in order
 MODEL_NAMES = [
     "gemini-2.0-flash-exp",
     "gemini-1.5-flash",
@@ -24,16 +23,19 @@ last_error = None
 
 for name in MODEL_NAMES:
     try:
-        model = genai.GenerativeModel(name)
-        # Quick test to verify the model works
-        model.generate_content("test")
+        # Create the model instance
+        test_model = genai.GenerativeModel(name)
+        # Test it with a minimal request
+        test_model.generate_content("test")
+        # If we get here, the model works
+        model = test_model
         print(f"✅ Gemini model '{name}' initialized successfully.")
         break
     except Exception as e:
         print(f"❌ Model '{name}' failed: {e}")
         last_error = e
 
-if not model:
+if model is None:
     raise RuntimeError(f"No Gemini model available. Last error: {last_error}")
 
 STYLE_RULES = """
