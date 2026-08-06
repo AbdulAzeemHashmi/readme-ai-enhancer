@@ -2,8 +2,19 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uuid
-from .gemini_client import analyze_readme
-from .supabase_client import insert_analysis, update_analysis, get_analysis
+import sys
+import os
+
+# Ensure the api directory is in sys.path for Vercel serverless execution
+sys.path.insert(0, os.path.dirname(__file__))
+
+try:
+    from gemini_client import analyze_readme
+    from supabase_client import insert_analysis, update_analysis, get_analysis
+except ImportError:
+    from .gemini_client import analyze_readme
+    from .supabase_client import insert_analysis, update_analysis, get_analysis
+
 
 app = FastAPI()
 
