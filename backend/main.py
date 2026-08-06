@@ -67,3 +67,8 @@ async def get_result(id: str):
 @app.get("/")
 def root():
     return {"message": "README AI Enhancer Backend"}
+
+# Health check endpoint for Render
+@app.get("/healthz")
+async def health_check():
+    return {"status": "ok"}
