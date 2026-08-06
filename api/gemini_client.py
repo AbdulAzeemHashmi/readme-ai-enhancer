@@ -48,38 +48,43 @@ def generate_with_fallback(prompt: str) -> str:
     raise RuntimeError(f"All Gemini models failed. Last error: {last_err}")
 
 def analyze_readme(text: str):
-    limitations_prompt = f"""
-You are an expert technical writer reviewing a README file.
-Analyze the README content below and produce a numbered list of its specific limitations, gaps, and weak points.
-Be concrete and actionable. Group similar issues together.
+    combined_prompt = f"""
+You are an expert technical writer reviewing and rewriting a README file.
 
-{STYLE_RULES}
-
-README Content:
-{text}
-
-Limitations (numbered list):
-"""
-    limitations = generate_with_fallback(limitations_prompt)
-
-    improved_prompt = f"""
-You are an expert technical writer.
-Rewrite the README below into a polished, professional, and complete document.
-Address every limitation listed. The output must be valid Markdown only, with no explanation or commentary before or after.
+Task 1: Analyze the README content below and produce a numbered list of its specific limitations, gaps, and weak points under the section header ===LIMITATIONS===.
+Task 2: Rewrite the README into a polished, professional, and complete document addressing every limitation under the section header ===IMPROVED_README===.
 
 {STYLE_RULES}
 - Use animated badges from shields.io where appropriate
 - Include emojis in section headings
-- Structure with: Overview, Features, Tech Stack, Getting Started, Usage, Environment Variables, Contributing, License
+- Structure the rewritten README with: Overview, Features, Tech Stack, Getting Started, Usage, Environment Variables, Contributing, License
 
-Original README:
+Original README Content:
 {text}
 
-Identified Limitations to Fix:
-{limitations}
+Produce your entire output using EXACTLY this section format (keep the delimiters intact):
 
-Complete Improved README (Markdown only, starts with #):
+===LIMITATIONS===
+[Numbered list of limitations, gaps, and missing details]
+
+===IMPROVED_README===
+[Complete improved README markdown content starting with #]
 """
-    improved_text = generate_with_fallback(improved_prompt)
+    raw_output = generate_with_fallback(combined_prompt)
 
-    return limitations, improved_text
+    limitations = ""
+    improved_text = ""
+
+    if "===LIMITATIONS===" in raw_output and "===IMPROVED_README===" in raw_output:
+        parts = raw_output.split("===IMPROVED_README===")
+        limitations = parts[0].replace("===LIMITATIONS===", "").strip()
+        improved_text = parts[1].strip()
+    elif "===LIMITATIONS===" in raw_output:
+        limitations = raw_output.replace("===LIMITATIONS===", "").strip()
+        improved_text = limitations
+    else:
+        limitations = raw_output
+        improved_text = raw_output
+
+    return limitations, improved_text
+

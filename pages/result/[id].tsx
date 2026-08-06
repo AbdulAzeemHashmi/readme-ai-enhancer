@@ -54,6 +54,9 @@ export default function Result() {
 
     useEffect(() => {
         if (!id) return;
+
+        let timeoutId: NodeJS.Timeout;
+
         const fetchResult = async () => {
             try {
                 const res = await fetch(`/api/result/${id}`);
@@ -66,14 +69,25 @@ export default function Result() {
                     throw new Error(`Server returned error (${res.status}): ${rawText.slice(0, 150)}`);
                 }
                 if (!res.ok) throw new Error(json.detail || json.error || 'Failed to load analysis result');
+                
                 setData(json);
+
+                if (json.status === 'processing') {
+                    timeoutId = setTimeout(fetchResult, 2000);
+                } else {
+                    setLoading(false);
+                }
             } catch (err: unknown) {
                 setError(err instanceof Error ? err.message : 'Failed to load result');
-            } finally {
                 setLoading(false);
             }
         };
+
         fetchResult();
+
+        return () => {
+            if (timeoutId) clearTimeout(timeoutId);
+        };
     }, [id]);
 
     const downloadImproved = useCallback(() => {
