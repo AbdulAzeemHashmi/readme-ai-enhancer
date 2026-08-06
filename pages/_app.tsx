@@ -9,7 +9,7 @@ export default function App({ Component, pageProps }: AppProps) {
                 <meta charSet="utf-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <meta name="theme-color" content="#07080f" />
-                <meta name="description" content="README AI Enhancer — Upload your README, let AI find its limitations and rewrite it to be clearer, more professional, and complete. Download the improved version instantly." />
+                <meta name="description" content="README AI Enhancer - Upload your README, let AI find its limitations and rewrite it to be clearer, more professional, and complete. Download the improved version instantly." />
                 <meta property="og:type" content="website" />
                 <meta property="og:title" content="README AI Enhancer" />
                 <meta property="og:description" content="AI-powered README improvement tool. Find limitations and get a professional rewrite in seconds." />

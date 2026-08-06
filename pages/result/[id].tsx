@@ -106,7 +106,7 @@ export default function Result() {
     return (
         <>
             <Head>
-                <title>Analysis Result — README AI Enhancer</title>
+                <title>Analysis Result - README AI Enhancer</title>
             </Head>
 
             <div className="orb orb-1" />
