@@ -11,8 +11,30 @@ if not GEMINI_API_KEY:
 
 genai.configure(api_key=GEMINI_API_KEY)
 
-MODEL_NAME = "gemini-1.5-flash"
-model = genai.GenerativeModel(MODEL_NAME)
+# Models to try in order (most recent / most likely to work with AQ keys first)
+MODEL_NAMES = [
+    "gemini-2.0-flash-exp",
+    "gemini-1.5-flash",
+    "gemini-1.5-pro",
+    "gemini-pro",
+]
+
+model = None
+last_error = None
+
+for name in MODEL_NAMES:
+    try:
+        model = genai.GenerativeModel(name)
+        # Quick test to verify the model works
+        model.generate_content("test")
+        print(f"✅ Gemini model '{name}' initialized successfully.")
+        break
+    except Exception as e:
+        print(f"❌ Model '{name}' failed: {e}")
+        last_error = e
+
+if not model:
+    raise RuntimeError(f"No Gemini model available. Last error: {last_error}")
 
 STYLE_RULES = """
 STRICT FORMATTING RULES (you must follow all of them):
