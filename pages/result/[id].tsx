@@ -57,8 +57,15 @@ export default function Result() {
         const fetchResult = async () => {
             try {
                 const res = await fetch(`/api/result/${id}`);
-                const json = await res.json();
-                if (!res.ok) throw new Error(json.detail || json.error || 'Failed to load');
+                const contentType = res.headers.get('content-type') || '';
+                let json: any = {};
+                if (contentType.includes('application/json')) {
+                    json = await res.json();
+                } else {
+                    const rawText = await res.text();
+                    throw new Error(`Server returned error (${res.status}): ${rawText.slice(0, 150)}`);
+                }
+                if (!res.ok) throw new Error(json.detail || json.error || 'Failed to load analysis result');
                 setData(json);
             } catch (err: unknown) {
                 setError(err instanceof Error ? err.message : 'Failed to load result');

@@ -4,40 +4,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-if not GEMINI_API_KEY:
-    raise RuntimeError("GEMINI_API_KEY not set")
-
-genai.configure(api_key=GEMINI_API_KEY)
-
-# Models to try in order
-MODEL_NAMES = [
-    "gemini-2.0-flash-exp",
-    "gemini-1.5-flash",
-    "gemini-1.5-pro",
-    "gemini-pro",
-]
-
-model = None
-last_error = None
-
-for name in MODEL_NAMES:
-    try:
-        # Create the model instance
-        test_model = genai.GenerativeModel(name)
-        # Test it with a minimal request
-        test_model.generate_content("test")
-        # If we get here, the model works
-        model = test_model
-        print(f"✅ Gemini model '{name}' initialized successfully.")
-        break
-    except Exception as e:
-        print(f"❌ Model '{name}' failed: {e}")
-        last_error = e
-
-if model is None:
-    raise RuntimeError(f"No Gemini model available. Last error: {last_error}")
-
 STYLE_RULES = """
 STRICT FORMATTING RULES (you must follow all of them):
 - Do NOT use em dashes or en dashes.
@@ -46,6 +12,38 @@ STRICT FORMATTING RULES (you must follow all of them):
 - Use proper Markdown headings, bullet points, code blocks, and tables.
 - Write in clear, direct, professional English.
 """
+
+MODEL_NAMES = [
+    "gemini-2.5-flash",
+    "gemini-2.0-flash",
+    "gemini-1.5-flash",
+    "gemini-1.5-pro",
+    "gemini-pro",
+]
+
+def get_api_key():
+    key = os.getenv("GEMINI_API_KEY")
+    if not key:
+        raise ValueError("GEMINI_API_KEY environment variable is not configured.")
+    return key
+
+def generate_with_fallback(prompt: str) -> str:
+    api_key = get_api_key()
+    genai.configure(api_key=api_key)
+    
+    last_err = None
+    for model_name in MODEL_NAMES:
+        try:
+            model = genai.GenerativeModel(model_name)
+            response = model.generate_content(prompt)
+            if response and response.text:
+                return response.text
+        except Exception as e:
+            print(f"Gemini model '{model_name}' failed: {e}")
+            last_err = e
+            continue
+            
+    raise RuntimeError(f"All Gemini models failed. Last error: {last_err}")
 
 def analyze_readme(text: str):
     limitations_prompt = f"""
@@ -60,8 +58,7 @@ README Content:
 
 Limitations (numbered list):
 """
-    limitations_res = model.generate_content(limitations_prompt)
-    limitations = limitations_res.text
+    limitations = generate_with_fallback(limitations_prompt)
 
     improved_prompt = f"""
 You are an expert technical writer.
@@ -81,7 +78,6 @@ Identified Limitations to Fix:
 
 Complete Improved README (Markdown only, starts with #):
 """
-    improved_res = model.generate_content(improved_prompt)
-    improved_text = improved_res.text
+    improved_text = generate_with_fallback(improved_prompt)
 
-    return limitations, improved_text
+    return limitations, improved_text

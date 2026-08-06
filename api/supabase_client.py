@@ -4,30 +4,36 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SUPABASE_URL = os.getenv("NEXT_PUBLIC_SUPABASE_URL")
-SUPABASE_KEY = os.getenv("NEXT_PUBLIC_SUPABASE_ANON_KEY")
-
-if not SUPABASE_URL or not SUPABASE_KEY:
-    raise RuntimeError("Supabase environment variables not set")
-
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+def get_supabase_client() -> Client:
+    url = os.getenv("NEXT_PUBLIC_SUPABASE_URL") or os.getenv("SUPABASE_URL")
+    key = os.getenv("NEXT_PUBLIC_SUPABASE_ANON_KEY") or os.getenv("SUPABASE_KEY") or os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+    
+    if not url or not key:
+        raise ValueError("Supabase environment variables (NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY) are not set.")
+    
+    return create_client(url, key)
 
 def insert_analysis(text: str):
-    result = supabase.table("readme_analyses").insert({
+    client = get_supabase_client()
+    result = client.table("readme_analyses").insert({
         "original_text": text,
         "status": "processing"
     }).execute()
+    if not result.data:
+        raise RuntimeError("Failed to insert analysis into database.")
     return result.data[0]["id"]
 
 def update_analysis(id: str, limitations: str, improved_text: str):
-    supabase.table("readme_analyses").update({
+    client = get_supabase_client()
+    client.table("readme_analyses").update({
         "limitations": limitations,
         "improved_text": improved_text,
         "status": "completed"
     }).eq("id", id).execute()
 
 def get_analysis(id: str):
-    result = supabase.table("readme_analyses").select("*").eq("id", id).execute()
+    client = get_supabase_client()
+    result = client.table("readme_analyses").select("*").eq("id", id).execute()
     if result.data:
         return result.data[0]
-    return None
+    return None

@@ -85,14 +85,23 @@ export default function Home() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text }),
             });
-            const data = await res.json();
-            if (res.ok) {
+            
+            const contentType = res.headers.get('content-type') || '';
+            let data: any = {};
+            if (contentType.includes('application/json')) {
+                data = await res.json();
+            } else {
+                const rawText = await res.text();
+                throw new Error(`Server returned error (${res.status}): ${rawText.slice(0, 150)}`);
+            }
+
+            if (res.ok && data.id) {
                 router.push(`/result/${data.id}`);
             } else {
-                setError(data.detail || data.error || 'Something went wrong. Please try again.');
+                setError(data.detail || data.error || 'Something went wrong on the server. Please try again.');
             }
-        } catch {
-            setError('Network error. Please check your connection and try again.');
+        } catch (err: any) {
+            setError(err.message || 'Network error. Please check your connection and try again.');
         } finally {
             setLoading(false);
         }

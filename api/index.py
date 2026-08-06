@@ -37,6 +37,7 @@ async def analyze(request: AnalyzeRequest):
         update_analysis(record_id, limitations, improved_text)
         return AnalyzeResponse(id=record_id)
     except Exception as e:
+        print(f"Error in /api/analyze: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/result/{id}", response_model=ResultResponse)
@@ -46,21 +47,28 @@ async def get_result(id: str):
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid ID format")
     
-    record = get_analysis(id)
-    if not record:
-        raise HTTPException(status_code=404, detail="Not found")
-    
-    return ResultResponse(
-        id=record["id"],
-        limitations=record["limitations"],
-        improved_text=record["improved_text"],
-        status=record["status"],
-        created_at=record["created_at"]
-    )
+    try:
+        record = get_analysis(id)
+        if not record:
+            raise HTTPException(status_code=404, detail="Analysis result not found")
+        
+        return ResultResponse(
+            id=record["id"],
+            limitations=record.get("limitations") or "",
+            improved_text=record.get("improved_text") or "",
+            status=record.get("status") or "completed",
+            created_at=str(record.get("created_at") or "")
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error in /api/result/{id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/healthz")
 async def health_check():
     return {"status": "ok"}
+
 
 # For local development (if run with uvicorn directly)
 if __name__ == "__main__":
