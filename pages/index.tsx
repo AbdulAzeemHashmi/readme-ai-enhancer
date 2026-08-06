@@ -79,10 +79,8 @@ export default function Home() {
         setLoading(true);
         setError('');
 
-        const API_BASE = process.env.NEXT_PUBLIC_PYTHON_API_URL || 'http://localhost:8000';
-
         try {
-            const res = await fetch(`${API_BASE}/analyze`, {
+            const res = await fetch('/api/analyze', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text }),

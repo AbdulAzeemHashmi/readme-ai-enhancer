@@ -55,9 +55,8 @@ export default function Result() {
     useEffect(() => {
         if (!id) return;
         const fetchResult = async () => {
-            const API_BASE = process.env.NEXT_PUBLIC_PYTHON_API_URL || 'http://localhost:8000';
             try {
-                const res = await fetch(`${API_BASE}/result/${id}`);
+                const res = await fetch(`/api/result/${id}`);
                 const json = await res.json();
                 if (!res.ok) throw new Error(json.detail || json.error || 'Failed to load');
                 setData(json);
